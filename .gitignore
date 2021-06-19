@@ -47,3 +47,5 @@ juce
 bin
 doxygen/doc
 doxygen/build
+
+.DS_Store

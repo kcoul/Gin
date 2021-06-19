@@ -39,9 +39,10 @@ public:
         container.browse.onClick = [this]
         {
             juce::FileChooser box (title, juce::File (value.toString()), pattern);
-
+#ifndef JUCE_ANDROID
             if (box.browseForFileToOpen())
                 value.setValue (box.getResult().getFullPathName());
+#endif
         };
 
         container.clear.onClick = [this] { value.setValue (""); };
@@ -140,8 +141,9 @@ private:
                 colourSelector.setCurrentColour (juce::Colour::fromString (value.toString()), juce::dontSendNotification);
 
                 juce::CallOutBox callOut (colourSelector, getScreenBounds(), nullptr);
+#ifndef JUCE_ANDROID
                 callOut.runModalLoop();
-
+#endif
                 value = colourSelector.getCurrentColour().toString();
             }
         }

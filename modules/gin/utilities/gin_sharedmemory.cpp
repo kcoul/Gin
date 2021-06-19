@@ -76,10 +76,12 @@ public:
         bool needsInit = false;
 
         shareName = "/jshm" + juce::File::createLegalFileName (name);
-
+#ifndef JUCE_ANDROID
         fd = shm_open (shareName.toRawUTF8(),  O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+
         if (fd == -1)
             fd = shm_open (shareName.toRawUTF8(),  O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
         else
             needsInit = true;
 
@@ -109,6 +111,7 @@ public:
 
         if (data != nullptr && needsInit)
             memset (data, 0, size_t (size));
+#endif
     }
 
     ~Impl()
@@ -118,14 +121,17 @@ public:
 
         if (fd != -1)
             close (fd);
-
+#ifndef JUCE_ANDROID
         shm_unlink (shareName.toRawUTF8());
+#endif
     }
 
     static void remove (const juce::String& name)
     {
         juce::String shareName = "/jshm" + juce::File::createLegalFileName (name);
+#ifndef JUCE_ANDROID
         shm_unlink (shareName.toRawUTF8());
+#endif
     }
 
     juce::String shareName;
