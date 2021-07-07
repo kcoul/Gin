@@ -39,7 +39,18 @@ public:
         container.browse.onClick = [this]
         {
             juce::FileChooser box (title, juce::File (value.toString()), pattern);
-#ifndef JUCE_ANDROID
+#ifdef JUCE_ANDROID
+            box.launchAsync(juce::FileBrowserComponent::FileChooserFlags::openMode,
+            [this](const juce::FileChooser& box)
+            {
+                auto file = box.getResult();
+
+                if (file.existsAsFile())
+                {
+                    value.setValue (box.getResult().getFullPathName());
+                }
+            });
+#else
             if (box.browseForFileToOpen())
                 value.setValue (box.getResult().getFullPathName());
 #endif
