@@ -1947,7 +1947,14 @@ protected:
                 sum = vmlaq_f32( sum, vld1q_f32( flt ), vld1q_f32( ip ));
             }
 
-            op[ 0 ] = vaddvq_f32( sum );
+            #if defined(__aarch64__)
+                op[ 0 ] = vaddvq_f32( sum );
+            #else
+                //Source: https://github.com/recp/cglm/blob/81a74ba2255dd4c60f19126aab9d78609e74a5c8/include/cglm/simd/arm.h#L19-L20
+                sum = vaddq_f32(sum, vrev64q_f32(sum));
+                sum = vaddq_f32(sum, vcombine_f32(vget_high_f32(sum), vget_low_f32(sum)));
+                op[ 0 ] = vgetq_lane_f32(sum, 0);
+            #endif
 
         #else // defined( LANCIR_NEON )
 
@@ -2016,9 +2023,13 @@ protected:
             const float32x2_t sum2 = vadd_f32( vget_high_f32( sum ),
                 vget_low_f32( sum ));
 
-            op[ 0 ] = vaddv_f32( vmla_f32( sum2, vld1_f32( flt + 4 ),
-                vld1_f32( ip + 4 )));
-
+            #if defined(__aarch64__)
+                op[ 0 ] = vaddv_f32( vmla_f32( sum2, vld1_f32( flt + 4 ),
+                    vld1_f32( ip + 4 )));
+            #else
+                const float32x2_t wrapped = vmla_f32( sum2, vld1_f32( flt + 4 ), vld1_f32( ip + 4 ));
+                op[ 0 ] = vget_lane_f32(wrapped, 0) + vget_lane_f32(wrapped, 1);
+            #endif
         #else // defined( LANCIR_NEON )
 
             float sum0 = flt[ 0 ] * ip[ 0 ];
