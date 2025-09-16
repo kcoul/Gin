@@ -69,10 +69,6 @@
 
 #include <map>
 #include <random>
-#ifndef _USE_MATH_DEFINES
- #define _USE_MATH_DEFINES
-#endif
-#include <cmath>
 
 JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wfloat-equal")
 
@@ -104,6 +100,7 @@ namespace gin
 #include "dsp/gin_gateeffect.h"
 #include "dsp/gin_lfo.h"
 #include "dsp/gin_midififo.h"
+#include "dsp/gin_audiomidififo.h"
 #include "dsp/gin_modulation.h"
 #include "dsp/gin_mseg.h"
 #include "dsp/gin_noise.h"
